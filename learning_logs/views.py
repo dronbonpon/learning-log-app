@@ -6,24 +6,33 @@ from django.http import Http404
 
 
 def check_topic_owner(test_user, topic):
-    #Проверяет, принадлежит ли тема данному пользователю
+    """
+    Проверяет, принадлежит ли тема данному пользователю
+    """
     if topic.owner != test_user.user:
         raise Http404
 
 def index(request):
-    #Домашняя страница приложения learning_logs
+    """
+    Выводит домашнюю страницу приложения
+    """
     return render(request, 'learning_logs/index.html')
 
 @login_required
 def topics(request):
-    #Выводит все темы
+    """
+    Выводит все темы
+
+    """
     topics = Topic.objects.filter(owner=request.user).order_by('date_added')
     context = {'topics':topics}
     return render(request, 'learning_logs/topics.html', context)
 
 @login_required
 def topic(request, topic_id):
-    #Выводит одну тему и все ее записи
+    """
+    Выводит одну тему и все ее записи
+    """
     topic = get_object_or_404(Topic, id=topic_id)
     check_topic_owner(request, topic)
 
@@ -33,7 +42,9 @@ def topic(request, topic_id):
 
 @login_required
 def new_topic(request):
-    #Определяет новую тему
+    """
+    Определяет новую тему
+    """
     if request.method != 'POST':
         #
         form = TopicForm()
@@ -51,7 +62,9 @@ def new_topic(request):
 
 @login_required
 def new_entry(request, topic_id):
-    """Добавляет новую запись по конкретной теме."""
+    """
+    Добавляет новую запись по конкретной теме.
+    """
     topic = Topic.objects.get(id=topic_id)
     check_topic_owner(request, topic)
 
@@ -72,7 +85,9 @@ def new_entry(request, topic_id):
 
 @login_required
 def edit_entry(request, entry_id):
-    #Редкатирует существующую запись
+    """
+    Редкатирует существующую запись
+    """
     entry = Entry.objects.get(id=entry_id)
     topic = entry.topic
     check_topic_owner(request, topic)
